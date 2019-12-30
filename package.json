@@ -1,0 +1,28 @@
+{
+  "name": "liyuzhaocli-2",
+  "version": "1.0.0",
+  "description": "amz脚手架1.0",
+  "bin": {
+    "macaw": "./bin/macaw.js",
+    "amaz": "./bin/macaw-init.js"
+  },
+  "main": "./bin/macaw-hellow.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli"
+  ],
+  "author": "amaizngli",
+  "license": "ISC",
+  "dependencies": {
+    "cfonts": "^2.4.5",
+    "commander": "^4.0.0",
+    "download-git-repo": "^3.0.2",
+    "glob": "^7.1.5",
+    "handlebars": "^4.5.1",
+    "inquirer": "^7.0.0",
+    "metalsmith": "^2.3.0",
+    "ora": "^4.0.2"
+  }
+}
