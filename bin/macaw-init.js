@@ -26,23 +26,41 @@ if (!projectName) {  // project-name 必填  如果没有输入名称执行helph
 
 // 当前目录为空，如果当前目录的名称和project-name一样，则直接在当前目录下创建工程，否则，在当前目录下创建以project-name作为名称的目录作为工程的根目录
 // 当前目录不为空，如果目录中不存在与project-name同名的目录，则创建以project-name作为名称的目录作为工程的根目录，否则提示项目已经存在，结束命令执行。
-const list = glob.sync('*')  // 遍历当前目录
+// process.cwd() 是当前执行node命令时候的文件夹地址 __dirname 是被执行的js 文件的地址 ——文件所在目录
+const list = glob.sync('*')  // 遍历当前目录,数组类型
 let next = undefined;
-
 let rootName = path.basename(process.cwd());
 if (list.length) {  // 如果当前目录不为空
   if (list.some(n => {
     const fileName = path.resolve(process.cwd(), n);
     const isDir = fs.statSync(fileName).isDirectory();
-    return projectName === n && isDir
-  })) {
-    console.log(`项目${projectName}已经存在`);
-    remove(path.resolve(process.cwd(), projectName)) // 删除重复名字文件，并且重复创建，（逻辑修改）--> 询问是否删除重名文件然后，用户回答是，然后删除文件，并重新覆盖
+    return projectName === n && isDir // 找到创建文件名和当前目录文件存在一致的文件
+  })) { // 如果文件已经存在
+    next = inquirer.prompt([
+      {
+        name:"isRemovePro",
+        message:`项目${projectName}已经存在，是否覆盖文件`,
+        type: 'confirm',
+        default: true
+      }
+    ]).then(answer=>{
+        if(answer.isRemovePro){
+          remove(path.resolve(process.cwd(), projectName))
+          rootName = projectName;
+          return Promise.resolve(projectName);
+        }else{
+          console.log("停止创建")
+          next = undefined
+          // return;
+        }
+      })
+    // console.log(`项目${projectName}已经存在`);
+    // remove(path.resolve(process.cwd(), projectName)) // 删除重复名字文件，并且重复创建，（逻辑修改）--> 询问是否删除重名文件然后，用户回答是，然后删除文件，并重新覆盖
     // return;
   }
-  rootName = projectName;
-  next = Promise.resolve(projectName);
-} else if (rootName === projectName) {
+  // rootName = projectName;
+  // next = Promise.resolve(projectName);
+} else if (rootName === projectName) {  // 如果文件名和根目录文件名一致
   rootName = '.';
   next = inquirer.prompt([
     {
